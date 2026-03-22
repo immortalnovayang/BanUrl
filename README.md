@@ -19,10 +19,17 @@
 
 ## 安裝方式（開發者模式）
 
-1. 下載或 clone 此專案
+1. 下載專案檔案（擇一即可）
+
+   **方式 A：直接下載 ZIP（建議新手）**
+   - 點擊本頁上方綠色「**Code**」按鈕 → 選擇「**Download ZIP**」
+   - 將下載的 ZIP 解壓縮至任意資料夾
+
+   **方式 B：使用 Git clone**
    ```bash
    git clone https://github.com/immortalnovayang/BanUrl.git
    ```
+
 2. 開啟 Chrome，前往 `chrome://extensions/`
 3. 開啟右上角的「**開發人員模式**」
 4. 點擊「**載入未封裝項目**」
