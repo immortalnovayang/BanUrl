@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時段網址封鎖器 - 設定</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            width: 580px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 { color: #333; margin-bottom: 20px; font-size: 20px; }
+        h2 { color: #444; font-size: 16px; margin: 0 0 15px; }
+        h3 { margin: 0; font-size: 15px; }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 18px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea { resize: vertical; }
+
+        .time-row {
+            display: flex;
+            gap: 12px;
+        }
+        .time-row .form-group { flex: 1; margin-bottom: 0; }
+
+        .weekday-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .weekday-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .weekday-checkboxes label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: normal;
+            font-size: 13px;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .weekday-checkboxes input[type="checkbox"] { width: auto; }
+
+        .btn-toggle-all {
+            padding: 4px 10px;
+            font-size: 12px;
+            background: #607d8b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .btn-toggle-all:hover { background: #455a64; }
+
+        /* Buttons */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background-color: #45a049; }
+
+        .btn-secondary { background-color: #607d8b; }
+        .btn-secondary:hover { background-color: #455a64; }
+        .btn-danger { background-color: #f44336; }
+        .btn-danger:hover { background-color: #d32f2f; }
+        .btn-blue { background-color: #2196F3; }
+        .btn-blue:hover { background-color: #0b7dda; }
+        .btn-orange { background-color: #ff9800; }
+        .btn-orange:hover { background-color: #e68900; }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* Add rule section */
+        #addRuleSection {
+            display: none;
+            margin-bottom: 20px;
+            padding: 18px 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            background: #fff;
+        }
+        #addRuleSection h2 { color: #4CAF50; }
+
+        /* Rules list */
+        #rulesContainer { margin-top: 10px; }
+
+        .rule-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+        .rule-item.disabled { opacity: 0.55; }
+
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+        .rule-title {
+            font-weight: bold;
+            font-size: 14px;
+            word-break: break-all;
+            flex: 1;
+        }
+        .rule-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .rule-actions button { padding: 4px 10px; font-size: 12px; }
+
+        .rule-details { font-size: 13px; color: #555; line-height: 1.8; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-badge.on { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.off { background: #ffebee; color: #c62828; }
+
+        .empty-hint { color: #999; font-size: 14px; padding: 10px 0; }
+
+        /* Status message */
+        #status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: none;
+            z-index: 9999;
+        }
+        #status.success { background: #388e3c; }
+        #status.error { background: #d32f2f; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            width: 460px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box h2 { margin-top: 0; color: #2196F3; }
+
+        .import-export-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>時段網址封鎖器 - 設定</h1>
+
+    <!-- General Settings -->
+    <div class="section">
+        <h2>一般設定</h2>
+        <div class="form-group">
+            <label for="customMessage">封鎖時顯示的訊息：</label>
+            <textarea id="customMessage" rows="2" placeholder="此網站已被時段封鎖，請在指定時間後再瀏覽。"></textarea>
+        </div>
+        <div class="form-group">
+            <label style="font-weight:normal; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="overrideEnabled" style="width:auto;">
+                啟用暫時覆寫功能（允許使用者點擊按鈕暫時解除封鎖 15 分鐘）
+            </label>
+        </div>
+        <button id="saveSettings">儲存設定</button>
+    </div>
+
+    <!-- Import / Export -->
+    <div class="section">
+        <h2>匯入 / 匯出規則</h2>
+        <div class="import-export-row">
+            <button id="exportRules" class="btn-secondary">匯出規則</button>
+            <button id="importFileBtn" class="btn-secondary">選擇檔案匯入</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Rules List -->
+    <div class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0;">封鎖規則列表</h2>
+            <button id="addRuleBtn">＋ 新增規則</button>
+        </div>
+
+        <!-- Add Rule Form (inline, hidden by default) -->
+        <div id="addRuleSection">
+            <h2>新增規則</h2>
+            <div class="form-group">
+                <label for="addUrls">封鎖網域（每行一個）：</label>
+                <textarea id="addUrls" rows="3" placeholder="例如：facebook.com&#10;youtube.com&#10;twitter.com"></textarea>
+            </div>
+            <div class="time-row">
+                <div class="form-group">
+                    <label for="addStartTime">開始時間：</label>
+                    <input type="time" id="addStartTime" value="08:00">
+                </div>
+                <div class="form-group">
+                    <label for="addEndTime">結束時間：</label>
+                    <input type="time" id="addEndTime" value="22:00">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label style="margin:0;">週幾：</label>
+                    <button type="button" class="btn-toggle-all" id="addToggleAll">取消全選</button>
+                </div>
+                <div class="weekday-checkboxes" id="addWeekdays">
+                    <label><input type="checkbox" value="1" checked> 星期一</label>
+                    <label><input type="checkbox" value="2" checked> 星期二</label>
+                    <label><input type="checkbox" value="3" checked> 星期三</label>
+                    <label><input type="checkbox" value="4" checked> 星期四</label>
+                    <label><input type="checkbox" value="5" checked> 星期五</label>
+                    <label><input type="checkbox" value="6" checked> 星期六</label>
+                    <label><input type="checkbox" value="0" checked> 星期日</label>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button id="saveNewRule">儲存規則</button>
+                <button type="button" id="cancelAddRule" class="btn-secondary">取消</button>
+            </div>
+        </div>
+
+        <div id="rulesContainer">
+            <p class="empty-hint">載入中…</p>
+        </div>
+    </div>
+
+    <!-- Status Toast -->
+    <div id="status"></div>
+
+    <!-- Edit Rule Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <h2>編輯規則</h2>
+            <form id="editRuleForm">
+                <input type="hidden" id="editRuleId">
+                <div class="form-group">
+                    <label for="editUrls">封鎖網域（每行一個）：</label>
+                    <textarea id="editUrls" rows="3"></textarea>
+                </div>
+                <div class="time-row">
+                    <div class="form-group">
+                        <label for="editStartTime">開始時間：</label>
+                        <input type="time" id="editStartTime">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndTime">結束時間：</label>
+                        <input type="time" id="editEndTime">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <label style="margin:0;">週幾：</label>
+                        <button type="button" class="btn-toggle-all" id="editToggleAll">全選</button>
+                    </div>
+                    <div class="weekday-checkboxes" id="editWeekdays">
+                        <label><input type="checkbox" value="1"> 星期一</label>
+                        <label><input type="checkbox" value="2"> 星期二</label>
+                        <label><input type="checkbox" value="3"> 星期三</label>
+                        <label><input type="checkbox" value="4"> 星期四</label>
+                        <label><input type="checkbox" value="5"> 星期五</label>
+                        <label><input type="checkbox" value="6"> 星期六</label>
+                        <label><input type="checkbox" value="0"> 星期日</label>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button type="submit">儲存變更</button>
+                    <button type="button" id="cancelEdit" class="btn-secondary">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>
